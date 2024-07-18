@@ -21,13 +21,140 @@ $(error stop)
 else
 .PHONY: clean
 clean:
-    $(RM) $(BUILD_DIR)
+	$(RM) $(BUILD_DIR)
 endif
 
 else        # clean not existed
 
 
+PLATFORM_OS=$(if $(filter Windows%,$(OS)),windows,posix)
+TOOLCHAIN_CFG=$(INC_MAKE_DIR)/Makefile.$(PLATFORM_OS)
+include $(TOOLCHAIN_CFG)
 
+
+# $1 : arm tool path
+define quote
+'$(subst ','\'',$(1))'
+endef
+
+# Toolchain commands
+CC          := $(call quote,$(GNU_INSTALL_ROOT)$(GNU_PREFIX)-gcc)
+AS          := $(call quote,$(GNU_INSTALL_ROOT)$(GNU_PREFIX)-as)
+LD          := $(call quote,$(GNU_INSTALL_ROOT)$(GNU_PREFIX)-ld)
+OBJDUMP     := $(call quote,$(GNU_INSTALL_ROOT)$(GNU_PREFIX)-objdump)
+OBJCOPY     := $(call quote,$(GNU_INSTALL_ROOT)$(GNU_PREFIX)-objcopy)
+SIZE        := $(call quote,$(GNU_INSTALL_ROOT)$(GNU_PREFIX)-size)
+$(if $(shell $(CC) --version),,$(info Cannot find: $(CC).) \
+	$(info Please set values in: "$(abspath $(TOOLCHAIN_CONFIG_FILE))") \
+	$(info according to the actual configuration of your system.) \
+	$(error Cannot continue))
+
+# $1 : target name
+# $2 : source files
+# $3 : object files
+define bind_object_with_src
+$(eval $(3):=$(2))\
+$(eval $(3)_TGT:=$(1))\
+$(eval $(3): Makefile | $(dir $(3)).)
+endef
+
+
+# $1 : target name
+# $2 : source files
+define get_object_name
+$(BUILD_DIR)/$(strip $(1))/$(notdir $(2:%.s=%.s.o)).o
+endef
+
+
+# $1 : inc folder
+define get_inc_paths
+$(foreach inc_folders, $(1), -I$(inc_folders))
+endef
+
+
+# $1 : target name
+# $2 : src file
+define get_object_files
+$(foreach src_file, $(2),\
+    $(eval obj_file:=$(call get_object_name, $(1), $(src_file)))\
+    $(DEPENDENCIES += $(obj_file:%.o=%.d))\
+    $(call bind_object_with_src, $(1), $(src_file), $(obj_file))\
+    $(obj_file))
+endef
+
+# $1 : suffix
+# $2 : target name
+define target_specifies
+$($(addsuffix _$(strip $(2)), $(1)))
+endef
+
+INC_PATHS=$(call target_specifies, INC_PATHS, $($@_TGT))
+
+# $1 : target name
+# $2 : output file
+define prepare_build
+$(eval DEPENDENCIES:=)\
+$(eval $(2): \
+    $(call get_object_files, $(1),\
+        $(SRC_FILES) $(call target_specifies, SRC_FILES, $(1))))\
+$(eval -include $(DEPENDENCIES))\
+$(eval INC_PATHS_$(strip $(1)):=\
+    $(call get_inc_paths,\
+        $(INC_FOLDERS) $(call target_specifies, INC_FOLDERS, $(1))))
+endef
+
+
+
+# $1 : target name
+define define_target
+$(eval OUT_FILES:=$(BUILD_DIR)/$(strip $(1)))\
+$(eval $(1): $(OUT_FILES).out $(OUT_FILES).hex $(OUT_FILES).bin\
+        ; @echo DONE $(1))\
+$(call prepare_build, $(1), $(OUT_FILES).out)
+endef
+
+.PHONY: $(TARGET_NAME) all
+
+all: $(TARGET_NAME)
+
+
+$(BUILD_DIR):
+	$(MK) $@
+$(BUILD_DIR)/%/.: | $(BUILD_DIR)
+	cd $(BUILD_DIR) && $(MK) $*
+
+
+# $1 : compiler
+# $2 : flag
+# $3 : script
+define run
+$(info $(3) file : $(notdir $($@)))\
+$(NO_ECHO) $(1) -MD -MP -c -o $@ $(2) $($@) $(INC_PATHS)
+endef
+
+
+%.c.o:
+	$(call run, $(CC) -std=c99, $(CCFLAGS), Compiling)
+
+%.cpp.o:
+	$(call run, $(CC), $(CCFLAGS) $(CXFLAGS), Compiling)
+
+%.S.o %.s.o.o:
+	$(call run,$(CC) -x assembler-with-cpp, $(ASMFLAG), Assembling)
+
+
+%.out:
+	$(info Link target : $@)
+	$(NO_ECHO) $(CC) $(LDFLAGS) $(LIBS) $^ -Wl,-Map=$(@:.out=.map) -o $@
+	$(NO_ECHO) $(SIZE) $@
+
+%.hex: %.out
+	$(info prepare hex : $@)
+	$(NO_ECHO) $(OBJCOPY) -O ihex $< $@
+
+%.bin: %.out
+	$(info prepare bin : $@)
+	$(NO_ECHO) $(OBJCOPY) -O binary $< $@
 
 endif
 
