@@ -60,7 +60,7 @@ main-build: 001-helloWorld.elf secondary-outputs
 
 # Tool invocations
 001-helloWorld.elf 001-helloWorld.map: $(OBJS) $(USER_OBJS) E:\stm32f407vg\course\workspaces\001-helloWorld\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "001-helloWorld.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\stm32f407vg\course\workspaces\001-helloWorld\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="001-helloWorld.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "001-helloWorld.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\stm32f407vg\course\workspaces\001-helloWorld\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="001-helloWorld.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
