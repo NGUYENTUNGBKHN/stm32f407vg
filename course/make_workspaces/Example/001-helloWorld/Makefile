@@ -2,6 +2,7 @@ TARGET_NAME=helloWorld
 BUILD_DIR=_build
 
 PROJ_DIR=.
+CORE_DIR=$(PROJ_DIR)/../../Core
 MAKE_COMMON=$(PROJ_DIR)/../../Common
 
 $(BUILD_DIR)/$(TARGET_NAME).out:\
@@ -28,6 +29,7 @@ LDFLAGS+=-T$(LINKER_SCRIPT) -mthumb -mabi=aapcs
 SRC_FILES+=$(wildcard *.c)
 
 INC_FOLDERS=\
+	$(CORE_DIR)
 
 .PHONY: default help
 
