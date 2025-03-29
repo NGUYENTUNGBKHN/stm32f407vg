@@ -1,48 +1,21 @@
-22:33:25 **** Incremental Build of configuration Debug for project 001-helloWorld ****
+14:09:12 **** Incremental Build of configuration Debug for project 001-helloWorld-semihosting ****
 make -j12 all 
 arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/main.o"
-arm-none-eabi-gcc "../Src/syscalls.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/syscalls.d" -MT"Src/syscalls.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/syscalls.o"
-../Src/main.c: In function 'main':
-../Src/main.c:28:9: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
-   28 |         printf("Hello world !!!");
-      |         ^~~~~~
-../Src/main.c:20:1: note: include '<stdio.h>' or provide a declaration of 'printf'
-   19 | #include <stdint.h>
-  +++ |+#include <stdio.h>
-   20 | 
-../Src/main.c:28:9: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
-   28 |         printf("Hello world !!!");
-      |         ^~~~~~
-../Src/main.c:28:9: note: include '<stdio.h>' or provide a declaration of 'printf'
-arm-none-eabi-gcc -o "001-helloWorld.elf" @"objects.list"   -mcpu=cortex-m4 -T"E:\stm32f407vg\course\workspaces\001-helloWorld\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="001-helloWorld.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: 001-helloWorld.elf
+arm-none-eabi-gcc -o "001-helloWorld-semihosting.elf" @"objects.list"   -mcpu=cortex-m4 -T"E:\stm32f407vg\course\workspaces\001-helloWorld-semihosting\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="001-helloWorld-semihosting.map" -Wl,--gc-sections -static -specs=rdimon.specs -lc -lrdimon --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 001-helloWorld-semihosting.elf
  
-arm-none-eabi-size  001-helloWorld.elf 
-arm-none-eabi-objdump -h -S 001-helloWorld.elf  > "001-helloWorld.list"
+arm-none-eabi-size  001-helloWorld-semihosting.elf 
+arm-none-eabi-objdump -h -S 001-helloWorld-semihosting.elf  > "001-helloWorld-semihosting.list"
    text	   data	    bss	    dec	    hex	filename
-   4892	     92	   1900	   6884	   1ae4	001-helloWorld.elf
+   4476	    100	   2076	   6652	   19fc	001-helloWorld-semihosting.elf
 Finished building: default.size.stdout
  
-Finished building: 001-helloWorld.list
+Finished building: 001-helloWorld-semihosting.list
  
-22:33:45 **** Incremental Build of configuration Debug for project 001-helloWorld ****
+14:09:40 **** Incremental Build of configuration Debug for project 001-helloWorld-semihosting ****
 make -j12 all 
-arm-none-eabi-size  001-helloWorld.elf 
+arm-none-eabi-size  001-helloWorld-semihosting.elf 
    text	   data	    bss	    dec	    hex	filename
-   4892	     92	   1900	   6884	   1ae4	001-helloWorld.elf
-Finished building: default.size.stdout
- 
-22:37:04 **** Incremental Build of configuration Debug for project 001-helloWorld ****
-make -j12 all 
-arm-none-eabi-size  001-helloWorld.elf 
-   text	   data	    bss	    dec	    hex	filename
-   4892	     92	   1900	   6884	   1ae4	001-helloWorld.elf
-Finished building: default.size.stdout
- 
-22:39:32 **** Incremental Build of configuration Debug for project 001-helloWorld ****
-make -j12 all 
-arm-none-eabi-size  001-helloWorld.elf 
-   text	   data	    bss	    dec	    hex	filename
-   4892	     92	   1900	   6884	   1ae4	001-helloWorld.elf
+   4476	    100	   2076	   6652	   19fc	001-helloWorld-semihosting.elf
 Finished building: default.size.stdout
  
